@@ -66,5 +66,5 @@ def add_transaction(t_type, t_date, t_sum, description, category, wsheet):
         expense_cel = wsheet.find("Расходы").col
         expense_category_cel = wsheet.find("Категория расхода").col
         row_num = len(wsheet.col_values(expense_cel)) + 1
-        wsheet.update_cell(row_num, expense_cel, t_sum)
+        wsheet.update_cell(row_num, expense_cel, abs(int(t_sum)))
         wsheet.update_cell(row_num, expense_category_cel, category)
