@@ -1,17 +1,7 @@
-import gspread
 from datetime import datetime
-from oauth2client.service_account import ServiceAccountCredentials
 
 
-credentials = ServiceAccountCredentials.from_json_keyfile_name("CashFlow-7de2d73b7fb7.json",
-                                                               ['https://www.googleapis.com/auth/spreadsheets',
-                                                                'https://www.googleapis.com/auth/drive'])
-
-client = gspread.authorize(credentials)
-sh = client.open("table")
-
-
-def create_sheet_if_not_exist():
+def create_sheet_if_not_exist(sh):
     current_month = datetime.now().strftime('%B')
     current_year = datetime.now().strftime('%Y')
     sheet_name = current_month + " " + current_year
@@ -29,13 +19,12 @@ def create_sheet_if_not_exist():
     return worksheet
 
 
-def add_transaction(t_type, t_date, t_sum, description, category, wsheet=create_sheet_if_not_exist()):
+def add_transaction(t_type, t_date, t_sum, description, category, wsheet):
     date_cel = wsheet.find("Дата").col
     sum_cel = wsheet.find("Сумма").col
     desc_cel = wsheet.find("Описание").col
     category_cel = wsheet.find("Категория").col
     row_num = len(wsheet.col_values(wsheet.find("Дата").col)) + 1
-    # print(row_num, date_cel, sum_cel)
 
     wsheet.update_cell(row_num, date_cel, t_date)
     wsheet.update_cell(row_num, sum_cel, t_sum)
