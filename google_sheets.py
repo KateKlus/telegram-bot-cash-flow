@@ -48,9 +48,23 @@ def add_transaction(t_type, t_date, t_sum, description, category, wsheet):
     sum_cel = wsheet.find("Сумма").col
     desc_cel = wsheet.find("Описание").col
     category_cel = wsheet.find("Категория").col
-    row_num = len(wsheet.col_values(wsheet.find("Дата").col)) + 1
+    row_num = len(wsheet.col_values(date_cel)) + 1
 
     wsheet.update_cell(row_num, date_cel, t_date)
     wsheet.update_cell(row_num, sum_cel, t_sum)
     wsheet.update_cell(row_num, desc_cel, description)
     wsheet.update_cell(row_num, category_cel, category)
+
+    if t_type == "+":
+        income_cel = wsheet.find("Доходы").col
+        income_category_cel = wsheet.find("Категория дохода").col
+        row_num = len(wsheet.col_values(income_cel)) + 1
+        wsheet.update_cell(row_num, income_cel, t_sum)
+        wsheet.update_cell(row_num, income_category_cel, category)
+
+    if t_type == "-":
+        expense_cel = wsheet.find("Расходы").col
+        expense_category_cel = wsheet.find("Категория расхода").col
+        row_num = len(wsheet.col_values(expense_cel)) + 1
+        wsheet.update_cell(row_num, expense_cel, t_sum)
+        wsheet.update_cell(row_num, expense_category_cel, category)
