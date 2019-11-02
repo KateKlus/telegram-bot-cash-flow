@@ -77,6 +77,7 @@ def send_text(message):
         t_sum = "+" + str(content[2])
         description = str(content[1])
         answer = 'Доход от ' + now_date + "\n" + "Категория: " + str(my_category) + "\n" + description + " " + t_sum + "р."
+        add_transaction(content[0], now_date, t_sum, description, str(my_category), wsheet)
         bot.send_message(message.chat.id, answer)
 
     else:
