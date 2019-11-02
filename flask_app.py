@@ -51,7 +51,7 @@ def send_text(message):
 
     if message.text.startswith('-'):
         content = message.text.split(' ')
-        if len(content) == 3:
+        if len(content) == 3 and type(content[2]) is int:
             now = datetime.datetime.now()
             my_category = "Прочее"
             for category, items in expense_categories.items():
@@ -71,7 +71,7 @@ def send_text(message):
 
     elif message.text.startswith('+'):
         content = message.text.split(' ')
-        if len(content) == 3:
+        if len(content) == 3 and type(content[2]) is int:
             now = datetime.datetime.now()
             my_category = "Прочее"
             for category, items in income_categories.items():
