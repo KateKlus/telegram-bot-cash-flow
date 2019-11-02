@@ -16,7 +16,11 @@ bot.set_webhook(url="https://ekaterinaklus.pythonanywhere.com/{}".format(secret)
 
 app = Flask(__name__)
 
-categories = {"транспорт": ["метро", "такси", "автобус"], "еда": ["продукты", "перекус", "столовая"], "развлечения": ["кино", "кафе", "бар", "ресторан"]}
+expense_categories = {"транспорт": ["метро", "такси", "автобус"],
+              "еда": ["продукты", "перекус", "столовая"],
+              "развлечения": ["кино", "кафе", "бар", "ресторан"]}
+
+income_categories = {"зарплата": ["зп", "премия", "отпускные"], "переводы": ["перевод"] }
 
 # Credentials for google drive
 credentials = ServiceAccountCredentials.from_json_keyfile_name("CashFlow-7de2d73b7fb7.json",
@@ -47,13 +51,13 @@ def send_text(message):
         content = message.text.split(' ')
         now = datetime.datetime.now()
         my_category = "Прочее"
-        for category, items in categories.items():
+        for category, items in expense_categories.items():
             for item in items:
                 if item == str(content[1]):
                     my_category = category
 
         now_date = now.strftime("%Y-%m-%d")
-        t_sum = str(content[2])
+        t_sum = "-" + str(content[2])
         description = str(content[1])
         answer = 'Расход от ' + now_date + "\n" + "Категория: " + str(my_category) + "\n" + description + " " + t_sum + "р."
 
@@ -63,5 +67,17 @@ def send_text(message):
     elif message.text.startswith('+'):
         content = message.text.split(' ')
         now = datetime.datetime.now()
-        answer = 'Доход от ' + now.strftime("%Y-%m-%d") + "\n"+ str(content[1]) + " " + str(content[2]) + "р."
+        my_category = "Прочее"
+        for category, items in income_categories.items():
+            for item in items:
+                if item == str(content[1]):
+                    my_category = category
+
+        now_date = now.strftime("%Y-%m-%d")
+        t_sum = "+" + str(content[2])
+        description = str(content[1])
+        answer = 'Доход от ' + now_date + "\n" + "Категория: " + str(my_category) + "\n" + description + " " + t_sum + "р."
         bot.send_message(message.chat.id, answer)
+
+    else:
+        bot.send_message(message.chat.id, "Неверный формат сообщения")
