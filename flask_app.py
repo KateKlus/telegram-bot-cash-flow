@@ -48,10 +48,14 @@ def start_command(message):
 @bot.message_handler(content_types=['text'])
 def send_text(message):
     wsheet = create_sheet_if_not_exist(sh, sheets_service)
+    content = message.text.split(' ')
+    if len(content) == 3:
+        try:
+            amount = int(content[2])
+        except ValueError:
+            bot.send_message(message.chat.id, "Неверный формат сообщения")
 
-    if message.text.startswith('-'):
-        content = message.text.split(' ')
-        if len(content) == 3 and type(content[2]) is int:
+        if message.text.startswith('-'):
             now = datetime.datetime.now()
             my_category = "Прочее"
             for category, items in expense_categories.items():
@@ -66,12 +70,8 @@ def send_text(message):
 
             add_transaction(content[0], now_date, t_sum, description, str(my_category), wsheet)
             bot.send_message(message.chat.id, answer)
-        else:
-            bot.send_message(message.chat.id, "Неверный формат сообщения")
 
-    elif message.text.startswith('+'):
-        content = message.text.split(' ')
-        if len(content) == 3 and type(content[2]) is int:
+        elif message.text.startswith('+'):
             now = datetime.datetime.now()
             my_category = "Прочее"
             for category, items in income_categories.items():
@@ -85,8 +85,6 @@ def send_text(message):
             answer = 'Доход от ' + now_date + "\n" + "Категория: " + str(my_category) + "\n" + description + " " + t_sum + "р."
             add_transaction(content[0], now_date, t_sum, description, str(my_category), wsheet)
             bot.send_message(message.chat.id, answer)
-        else:
-            bot.send_message(message.chat.id, "Неверный формат сообщения")
 
     else:
         bot.send_message(message.chat.id, "Неверный формат сообщения")
