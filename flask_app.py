@@ -51,36 +51,42 @@ def send_text(message):
 
     if message.text.startswith('-'):
         content = message.text.split(' ')
-        now = datetime.datetime.now()
-        my_category = "Прочее"
-        for category, items in expense_categories.items():
-            for item in items:
-                if item == str(content[1]):
-                    my_category = category
+        if len(content) == 3:
+            now = datetime.datetime.now()
+            my_category = "Прочее"
+            for category, items in expense_categories.items():
+                for item in items:
+                    if item == str(content[1]):
+                        my_category = category
 
-        now_date = now.strftime("%Y-%m-%d")
-        t_sum = "-" + str(content[2])
-        description = str(content[1])
-        answer = 'Расход от ' + now_date + "\n" + "Категория: " + str(my_category) + "\n" + description + " " + t_sum + "р."
+            now_date = now.strftime("%Y-%m-%d")
+            t_sum = "-" + str(content[2])
+            description = str(content[1])
+            answer = 'Расход от ' + now_date + "\n" + "Категория: " + str(my_category) + "\n" + description + " " + t_sum + "р."
 
-        add_transaction(content[0], now_date, t_sum, description, str(my_category), wsheet)
-        bot.send_message(message.chat.id, answer)
+            add_transaction(content[0], now_date, t_sum, description, str(my_category), wsheet)
+            bot.send_message(message.chat.id, answer)
+        else:
+            bot.send_message(message.chat.id, "Неверный формат сообщения")
 
     elif message.text.startswith('+'):
         content = message.text.split(' ')
-        now = datetime.datetime.now()
-        my_category = "Прочее"
-        for category, items in income_categories.items():
-            for item in items:
-                if item == str(content[1]):
-                    my_category = category
+        if len(content) == 3:
+            now = datetime.datetime.now()
+            my_category = "Прочее"
+            for category, items in income_categories.items():
+                for item in items:
+                    if item == str(content[1]):
+                        my_category = category
 
-        now_date = now.strftime("%Y-%m-%d")
-        t_sum = "+" + str(content[2])
-        description = str(content[1])
-        answer = 'Доход от ' + now_date + "\n" + "Категория: " + str(my_category) + "\n" + description + " " + t_sum + "р."
-        add_transaction(content[0], now_date, t_sum, description, str(my_category), wsheet)
-        bot.send_message(message.chat.id, answer)
+            now_date = now.strftime("%Y-%m-%d")
+            t_sum = "+" + str(content[2])
+            description = str(content[1])
+            answer = 'Доход от ' + now_date + "\n" + "Категория: " + str(my_category) + "\n" + description + " " + t_sum + "р."
+            add_transaction(content[0], now_date, t_sum, description, str(my_category), wsheet)
+            bot.send_message(message.chat.id, answer)
+        else:
+            bot.send_message(message.chat.id, "Неверный формат сообщения")
 
     else:
         bot.send_message(message.chat.id, "Неверный формат сообщения")
