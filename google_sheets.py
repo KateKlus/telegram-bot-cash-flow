@@ -1,7 +1,9 @@
 from datetime import datetime
 
+template_sheet_id = 2112280131
 
-def create_sheet_if_not_exist(sh):
+
+def create_sheet_if_not_exist(sh, sheets_service):
     current_month = datetime.now().strftime('%B')
     current_year = datetime.now().strftime('%Y')
     sheet_name = current_month + " " + current_year
@@ -13,7 +15,29 @@ def create_sheet_if_not_exist(sh):
         names_list.append(lst.title)
 
     if names_list.count(sheet_name) == 0:
-        sh.add_worksheet(title=sheet_name, rows="100", cols="11")
+        # Create worksheet from template
+        copy_sheet_to_another_spreadsheet_request_body = {
+            "destinationSpreadsheetId": sh.id
+        }
+
+        request = sheets_service.spreadsheets().sheets().copyTo(spreadsheetId=sh.id, sheetId=template_sheet_id,
+                                                                body=copy_sheet_to_another_spreadsheet_request_body)
+
+        response = request.execute()
+
+        # Rename it
+        body = {
+            'requests': {"updateSheetProperties": {
+                "properties": {
+                    "sheetId": response.get("sheetId"),
+                    "title": sheet_name,
+                },
+                "fields": "title"
+            }
+            }
+        }
+
+        response1 = sheets_service.spreadsheets().batchUpdate(spreadsheetId=sh.id, body=body).execute()
 
     worksheet = sh.worksheet(sheet_name)
     return worksheet

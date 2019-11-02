@@ -4,6 +4,7 @@ from telebot import types
 import time
 import datetime
 import gspread
+import apiclient.discovery
 from oauth2client.service_account import ServiceAccountCredentials
 from google_sheets import create_sheet_if_not_exist, add_transaction
 
@@ -24,9 +25,10 @@ income_categories = {"зарплата": ["зп", "премия", "отпуск�
 
 # Credentials for google drive
 credentials = ServiceAccountCredentials.from_json_keyfile_name("CashFlow-7de2d73b7fb7.json",
-                                                              ['https://www.googleapis.com/auth/spreadsheets',
+                                                               ['https://www.googleapis.com/auth/spreadsheets',
                                                                 'https://www.googleapis.com/auth/drive'])
 
+sheets_service = apiclient.discovery.build('sheets', 'v4', credentials=credentials)
 client = gspread.authorize(credentials)
 sh = client.open("table")
 
@@ -45,7 +47,7 @@ def start_command(message):
 
 @bot.message_handler(content_types=['text'])
 def send_text(message):
-    wsheet = create_sheet_if_not_exist(sh)
+    wsheet = create_sheet_if_not_exist(sh, sheets_service)
 
     if message.text.startswith('-'):
         content = message.text.split(' ')
