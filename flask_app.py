@@ -54,6 +54,7 @@ def send_text(message):
             amount = int(content[2])
         except ValueError:
             bot.send_message(message.chat.id, "Неверный формат сообщения")
+            return
 
         if message.text.startswith('-'):
             now = datetime.datetime.now()
