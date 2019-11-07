@@ -27,7 +27,8 @@ expense_categories = {"транспорт": ["метро", "такси", "авт
                       "дом": ["мебель", "техника", "быт"],
                       "зоотовары": ["корм", "наполнитель"],
                       "квартплата": ["аренда", "жкх"],
-                      "хобби": ["книги"]}
+                      "хобби": ["книги"],
+                      "переводы": ["переводы"]}
 
 income_categories = {"зарплата": ["зп", "премия", "отпускные"], "переводы": ["перевод"]}
 
@@ -46,7 +47,7 @@ def web_hook():
 
 @bot.message_handler(commands=['start', 'help'])
 def start_command(message):
-    bot.send_message(message.chat.id, 'Hi *' + message.chat.first_name + '*!' , parse_mode='Markdown', reply_markup=types.ReplyKeyboardRemove())
+    bot.send_message(message.chat.id, 'Формат сообщений: +/- название сумма', reply_markup=types.ReplyKeyboardRemove())
 
 
 @bot.message_handler(content_types=['text'])
