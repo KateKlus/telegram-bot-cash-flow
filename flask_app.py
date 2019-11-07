@@ -35,10 +35,6 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name("CashFlow-7de2d73
                                                                ['https://www.googleapis.com/auth/spreadsheets',
                                                                 'https://www.googleapis.com/auth/drive'])
 
-sheets_service = apiclient.discovery.build('sheets', 'v4', credentials=credentials)
-client = gspread.authorize(credentials)
-sh = client.open("table")
-
 
 @app.route('/{}'.format(secret), methods=["POST"])
 def web_hook():
@@ -54,6 +50,10 @@ def start_command(message):
 
 @bot.message_handler(content_types=['text'])
 def send_text(message):
+    sheets_service = apiclient.discovery.build('sheets', 'v4', credentials=credentials)
+    client = gspread.authorize(credentials)
+    sh = client.open("table")
+
     wsheet = create_sheet_if_not_exist(sh, sheets_service)
     content = message.text.split(' ')
     if len(content) == 3:
