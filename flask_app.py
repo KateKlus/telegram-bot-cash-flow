@@ -57,7 +57,7 @@ def start_command(message):
 def send_text(message):
     sheets_service = apiclient.discovery.build('sheets', 'v4', credentials=credentials)
     client = gspread.authorize(credentials)
-    sh = client.open("table")
+    sh = client.open("Cash-flow")
 
     wsheet = create_sheet_if_not_exist(sh, sheets_service)
     content = message.text.split(' ')
