@@ -4,9 +4,11 @@ from telebot import types
 import time
 import datetime
 import gspread
+import sqlite3
 import apiclient.discovery
 from oauth2client.service_account import ServiceAccountCredentials
 from google_sheets import create_sheet_if_not_exist, add_transaction
+from db import init_database
 
 secret = "12091995"
 bot = telebot.TeleBot('986714852:AAHEIG1WGgXcHk4o3WTZ0fCQ8So7Ps_b82Q', threaded=False)
@@ -17,28 +19,35 @@ bot.set_webhook(url="https://ekaterinaklus.pythonanywhere.com/{}".format(secret)
 
 app = Flask(__name__)
 
-expense_categories = {"транспорт": ["метро", "такси", "автобус"],
-                      "еда": ["продукты", "перекус", "столовая"],
-                      "развлечения": ["кино", "кафе", "бар", "ресторан", "театр", "музей", "балет", "филармония",
-                                      "алкоголь", "табак"],
-                      "связь": ["интернет", "телефон"],
-                      "праздники": ["подарок", "подарки"],
-                      "здоровье": ["аптека", "стоматология", "медицина"],
-                      "красота": ["косметика", "парикмахер"],
-                      "одежда и обувь": ["одежда", "обувь", "белье"],
-                      "дом": ["мебель", "техника", "быт", "дом"],
-                      "зоотовары": ["корм", "наполнитель", "мартин"],
-                      "квартплата": ["аренда", "жкх", "квартплата"],
-                      "хобби": ["книги"],
-                      "переводы": ["переводы"],
-                      "налоги": ["налог", "пошлина"]}
+# expense_categories = {"транспорт": ["метро", "такси", "автобус"],
+#                       "еда": ["продукты", "перекус", "столовая"],
+#                       "развлечения": ["кино", "кафе", "бар", "ресторан", "театр", "музей", "балет", "филармония",
+#                                       "алкоголь", "табак"],
+#                       "связь": ["интернет", "телефон"],
+#                       "праздники": ["подарок", "подарки"],
+#                       "здоровье": ["аптека", "стоматология", "медицина"],
+#                       "красота": ["косметика", "парикмахер"],
+#                       "одежда и обувь": ["одежда", "обувь", "белье"],
+#                       "дом": ["мебель", "техника", "быт", "дом"],
+#                       "зоотовары": ["корм", "наполнитель", "мартин"],
+#                       "квартплата": ["аренда", "жкх", "квартплата"],
+#                       "хобби": ["книги"],
+#                       "переводы": ["переводы"],
+#                       "налоги": ["налог", "пошлина"]}
+#
+# income_categories = {"зарплата": ["зп", "премия", "отпускные"], "переводы": ["перевод"], "возврат долга": "долг"}
 
-income_categories = {"зарплата": ["зп", "премия", "отпускные"], "переводы": ["перевод"], "возврат долга": "долг"}
+init_database()
+connection = sqlite3.connect("categories.db")
+cursor = connection.cursor()
 
 # Credentials for google drive
 credentials = ServiceAccountCredentials.from_json_keyfile_name("CashFlow-7de2d73b7fb7.json",
                                                                ['https://www.googleapis.com/auth/spreadsheets',
                                                                 'https://www.googleapis.com/auth/drive'])
+
+
+get_ctg_by_name = "SELECT count(*) FROM categories WHERE name=?"
 
 
 @app.route('/{}'.format(secret), methods=["POST"])
@@ -71,10 +80,10 @@ def send_text(message):
         if message.text.startswith('-'):
             now = datetime.datetime.now()
             my_category = "Прочее"
-            for category, items in expense_categories.items():
-                for item in items:
-                    if item == str(content[1]):
-                        my_category = category
+
+            cursor.execute(get_ctg_by_name, [(content[1])])
+            if cursor.fetchall():
+                my_category = content[1]
 
             now_date = now.strftime("%Y-%m-%d")
             t_sum = "-" + str(content[2])
@@ -87,10 +96,10 @@ def send_text(message):
         elif message.text.startswith('+'):
             now = datetime.datetime.now()
             my_category = "Прочее"
-            for category, items in income_categories.items():
-                for item in items:
-                    if item == str(content[1]):
-                        my_category = category
+
+            cursor.execute(get_ctg_by_name, [(content[1])])
+            if cursor.fetchall():
+                my_category = content[1]
 
             now_date = now.strftime("%Y-%m-%d")
             t_sum = "+" + str(content[2])
