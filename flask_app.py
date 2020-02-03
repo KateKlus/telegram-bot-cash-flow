@@ -67,7 +67,6 @@ def send_text(message):
             keyboard.add(callback_button)
             bot.send_message(message.chat.id, "Я – сообщение из обычного режима", reply_markup=keyboard)
 
-        bot.send_message(message.chat.id, answer)
 
     elif len(content) == 3:
         try:
