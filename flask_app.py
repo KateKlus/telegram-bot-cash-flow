@@ -81,7 +81,7 @@ def send_text(message):
                 reply_markup=kb
             )
             results.append(single_msg)
-            bot.answer_inline_query(message.id, results)
+            bot.answer_inline_query(message.chat.id, results)
 
 
     elif len(content) == 3:
