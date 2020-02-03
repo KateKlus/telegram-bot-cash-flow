@@ -72,7 +72,7 @@ def send_text(message):
             now = datetime.datetime.now()
             my_category = "Прочее"
 
-            cursor.execute(get_prnt_ctg_by_name, [(content[1])])
+            cursor.execute(get_prnt_ctg_by_name)
             rslt = cursor.fetchall()
             if rslt:
                 my_category = rslt[0][0]
