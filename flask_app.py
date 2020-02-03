@@ -54,7 +54,7 @@ def send_text(message):
     wsheet = create_sheet_if_not_exist(sh, sheets_service)
     content = message.text.split(' ')
     if message.text.startswith('Категории'):
-        cursor.execute(get_categories, [(content[1])])
+        cursor.execute(get_categories)
         rslt = cursor.fetchall()
         answer = "Доступные категории: \n"
         for item in rslt:
@@ -72,7 +72,7 @@ def send_text(message):
             now = datetime.datetime.now()
             my_category = "Прочее"
 
-            cursor.execute(get_prnt_ctg_by_name)
+            cursor.execute(get_prnt_ctg_by_name, [(content[1])])
             rslt = cursor.fetchall()
             if rslt:
                 my_category = rslt[0][0]
