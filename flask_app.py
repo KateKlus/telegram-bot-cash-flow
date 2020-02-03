@@ -30,6 +30,7 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name("CashFlow-7de2d73
 
 
 get_prnt_ctg_by_name = "SELECT name FROM categories WHERE ctg_id=(select parent_ctg_id from categories where name=?)"
+get_categories = "select name from categories where parent_ctg_id is not null"
 
 
 @app.route('/{}'.format(secret), methods=["POST"])
@@ -53,7 +54,12 @@ def send_text(message):
     wsheet = create_sheet_if_not_exist(sh, sheets_service)
     content = message.text.split(' ')
     if message.text.startswith('Категории'):
-        pass
+        cursor.execute(get_categories, [(content[1])])
+        rslt = cursor.fetchall()
+        answer = "Доступные категории: \n"
+        for item in rslt:
+            answer += str(item[0][0]) + "\n"
+            bot.send_message(message.chat.id, answer)
 
     if len(content) == 3:
         try:
