@@ -30,7 +30,8 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name("CashFlow-7de2d73
 
 
 get_prnt_ctg_by_name = "SELECT name FROM categories WHERE ctg_id=(select parent_ctg_id from categories where name=?)"
-get_categories = "select name from categories where parent_ctg_id is not null"
+get_sub_categories = "select name from categories where parent_ctg_id is not null"
+get_categories = "select name, ctg_id from categories where parent_ctg_id is null"
 
 
 @app.route('/{}'.format(secret), methods=["POST"])
@@ -53,15 +54,22 @@ def send_text(message):
 
     wsheet = create_sheet_if_not_exist(sh, sheets_service)
     content = message.text.split(' ')
+
     if message.text.startswith('Категории'):
         cursor.execute(get_categories)
         rslt = cursor.fetchall()
-        answer = "Доступные категории: \n"
+        # answer = "Доступные категории: \n"
         for item in rslt:
-            answer += str(item[0]) + "\n"
+            # answer += str(item[0]) + "\n"
+
+            keyboard = types.InlineKeyboardMarkup()
+            callback_button = types.InlineKeyboardButton(text=item[0], callback_data=item[1])
+            keyboard.add(callback_button)
+            bot.send_message(message.chat.id, "Я – сообщение из обычного режима", reply_markup=keyboard)
+
         bot.send_message(message.chat.id, answer)
 
-    if len(content) == 3:
+    elif len(content) == 3:
         try:
             amount = float(content[2])
         except ValueError:
