@@ -71,9 +71,18 @@ def send_text(message):
         cursor.execute(get_categories)
         rslt = cursor.fetchall()
         for item in rslt:
-            keyboard = types.InlineKeyboardMarkup()
-            callback_button = types.InlineKeyboardButton(text=item[0], callback_data="get_categories "+str(item[1]))
-            keyboard.add(callback_button)
+            kb = types.InlineKeyboardMarkup()
+            # Добавляем колбэк-кнопку с содержимым "test"
+            kb.add(types.InlineKeyboardButton(text=item[0], callback_data="get_categories "+str(item[1])))
+            results = []
+            single_msg = types.InlineQueryResultArticle(
+                id="1", title="Press me",
+                input_message_content=types.InputTextMessageContent(message_text="Я – сообщение из инлайн-режима"),
+                reply_markup=kb
+            )
+            results.append(single_msg)
+            bot.answer_inline_query(message.id, results)
+
 
     elif len(content) == 3:
         try:
