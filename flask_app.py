@@ -47,7 +47,7 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name("CashFlow-7de2d73
                                                                 'https://www.googleapis.com/auth/drive'])
 
 
-get_ctg_by_name = "SELECT count(*) FROM categories WHERE name=?"
+get_prnt_ctg_by_name = "SELECT name FROM categories WHERE ctg_id=(select parent_ctg_id from categories where name=?)"
 
 
 @app.route('/{}'.format(secret), methods=["POST"])
@@ -70,9 +70,12 @@ def send_text(message):
 
     wsheet = create_sheet_if_not_exist(sh, sheets_service)
     content = message.text.split(' ')
+    if message.text.startswith('Категории'):
+        pass
+
     if len(content) == 3:
         try:
-            amount = int(content[2])
+            amount = float(content[2])
         except ValueError:
             bot.send_message(message.chat.id, "Неверный формат сообщения")
             return
@@ -81,9 +84,10 @@ def send_text(message):
             now = datetime.datetime.now()
             my_category = "Прочее"
 
-            cursor.execute(get_ctg_by_name, [(content[1])])
-            if cursor.fetchall():
-                my_category = content[1]
+            cursor.execute(get_prnt_ctg_by_name, [(content[1])])
+            rslt = cursor.fetchall()
+            if rslt:
+                my_category = rslt[0][0]
 
             now_date = now.strftime("%Y-%m-%d")
             t_sum = "-" + str(content[2])
@@ -97,9 +101,10 @@ def send_text(message):
             now = datetime.datetime.now()
             my_category = "Прочее"
 
-            cursor.execute(get_ctg_by_name, [(content[1])])
-            if cursor.fetchall():
-                my_category = content[1]
+            cursor.execute(get_prnt_ctg_by_name, [(content[1])])
+            rslt = cursor.fetchall()
+            if rslt:
+                my_category = rslt[0][0]
 
             now_date = now.strftime("%Y-%m-%d")
             t_sum = "+" + str(content[2])
