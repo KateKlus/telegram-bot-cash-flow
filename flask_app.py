@@ -58,8 +58,8 @@ def send_text(message):
         rslt = cursor.fetchall()
         answer = "Доступные категории: \n"
         for item in rslt:
-            answer += str(item[0][0]) + "\n"
-            bot.send_message(message.chat.id, answer)
+            answer += str(item[0]) + "\n"
+        bot.send_message(message.chat.id, answer)
 
     if len(content) == 3:
         try:
