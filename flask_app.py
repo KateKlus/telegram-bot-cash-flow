@@ -46,6 +46,18 @@ def start_command(message):
     bot.send_message(message.chat.id, 'Формат сообщений: +/- название сумма', reply_markup=types.ReplyKeyboardRemove())
 
 
+@bot.callback_query_handler(func=lambda call: True)
+def callback_inline(call):
+    # Если сообщение из чата с ботом
+    if call.message:
+        if call.data.startswith("get_categories"):
+            bot.send_message(call.message.chat.id, "answer")
+    # Если сообщение из инлайн-режима
+    elif call.inline_message_id:
+        if call.data.startswith("get_categories"):
+            bot.send_message(call.message.chat.id, "answer")
+
+
 @bot.message_handler(content_types=['text'])
 def send_text(message):
     sheets_service = apiclient.discovery.build('sheets', 'v4', credentials=credentials)
@@ -58,15 +70,10 @@ def send_text(message):
     if message.text.startswith('Категории'):
         cursor.execute(get_categories)
         rslt = cursor.fetchall()
-        # answer = "Доступные категории: \n"
         for item in rslt:
-            # answer += str(item[0]) + "\n"
-
             keyboard = types.InlineKeyboardMarkup()
-            callback_button = types.InlineKeyboardButton(text=item[0], callback_data=item[1])
+            callback_button = types.InlineKeyboardButton(text=item[0], callback_data="get_categories "+str(item[1]))
             keyboard.add(callback_button)
-            bot.send_message(message.chat.id, "Я – сообщение из обычного режима", reply_markup=keyboard)
-
 
     elif len(content) == 3:
         try:
