@@ -19,24 +19,6 @@ bot.set_webhook(url="https://ekaterinaklus.pythonanywhere.com/{}".format(secret)
 
 app = Flask(__name__)
 
-# expense_categories = {"транспорт": ["метро", "такси", "автобус"],
-#                       "еда": ["продукты", "перекус", "столовая"],
-#                       "развлечения": ["кино", "кафе", "бар", "ресторан", "театр", "музей", "балет", "филармония",
-#                                       "алкоголь", "табак"],
-#                       "связь": ["интернет", "телефон"],
-#                       "праздники": ["подарок", "подарки"],
-#                       "здоровье": ["аптека", "стоматология", "медицина"],
-#                       "красота": ["косметика", "парикмахер"],
-#                       "одежда и обувь": ["одежда", "обувь", "белье"],
-#                       "дом": ["мебель", "техника", "быт", "дом"],
-#                       "зоотовары": ["корм", "наполнитель", "мартин"],
-#                       "квартплата": ["аренда", "жкх", "квартплата"],
-#                       "хобби": ["книги"],
-#                       "переводы": ["переводы"],
-#                       "налоги": ["налог", "пошлина"]}
-#
-# income_categories = {"зарплата": ["зп", "премия", "отпускные"], "переводы": ["перевод"], "возврат долга": "долг"}
-
 init_database()
 connection = sqlite3.connect("categories.db")
 cursor = connection.cursor()
@@ -90,7 +72,7 @@ def send_text(message):
                 my_category = rslt[0][0]
 
             now_date = now.strftime("%Y-%m-%d")
-            t_sum = "-" + str(content[2])
+            t_sum = 0 - float(content[2])
             description = str(content[1])
             answer = 'Расход от ' + now_date + "\n" + "Категория: " + str(my_category) + "\n" + description + " " + t_sum + "р."
 
@@ -107,7 +89,7 @@ def send_text(message):
                 my_category = rslt[0][0]
 
             now_date = now.strftime("%Y-%m-%d")
-            t_sum = "+" + str(content[2])
+            t_sum = float(content[2])
             description = str(content[1])
             answer = 'Доход от ' + now_date + "\n" + "Категория: " + str(my_category) + "\n" + description + " " + t_sum + "р."
             add_transaction(content[0], now_date, t_sum, description, str(my_category), wsheet)
